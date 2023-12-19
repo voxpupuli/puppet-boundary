@@ -1,46 +1,8 @@
+# frozen_string_literal: true
+
 require 'spec_helper_acceptance'
 
 describe 'boundary class' do
-  context 'default parameters' do
-    it 'works with no errors based on the example' do
-      pp = <<-EOS
-        package { 'unzip': ensure => present }
-        -> class { 'boundary':
-          version        => '0.14.2',
-          manage_service => true,
-          config_hash    => {
-              'data_dir'   => '/opt/boundary',
-              'datacenter' => 'east-aws',
-              'node_name'  => 'foobar',
-              'server'     => true,
-          }
-        }
-      EOS
-
-      # Run it twice and test for idempotency
-      apply_manifest(pp, catch_failures: true)
-      apply_manifest(pp, catch_changes: true)
-    end
-
-    describe file('/opt/boundary') do
-      it { is_expected.to be_directory }
-    end
-
-    describe service('boundary') do
-      it { is_expected.to be_enabled }
-      it { is_expected.to be_running }
-    end
-
-    describe command('boundary version') do
-      its(:stdout) { is_expected.to match %r{Consul v1.16.0} }
-    end
-
-    describe file('/etc/boundary/config.json') do
-      it { is_expected.to be_file }
-      its(:content) { is_expected.to match(%r{server}) }
-    end
-  end
-
   context 'default parameters' do
     it 'works with no errors based on the example' do
       pp = <<-EOS
