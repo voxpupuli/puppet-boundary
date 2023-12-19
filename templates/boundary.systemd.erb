@@ -1,0 +1,24 @@
+[Unit]
+Description=Boundary
+Documentation=https://boundaryproject.io/docs/
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStart=<%= scope.lookupvar('boundary::bin_dir') %>/boundary agent -config=<%= scope.lookupvar('boundary::config_dir') %> <%= scope.lookupvar('boundary::extra_options') %>
+KillMode=process
+KillSignal=SIGINT
+LimitNOFILE=65536
+LimitNPROC=infinity
+Restart=on-failure
+RestartSec=2
+StartLimitBurst=3
+StartLimitIntervalSec=10
+TasksMax=infinity
+OOMScoreAdjust=-1000
+User=<%= scope.lookupvar('boundary::user') %>
+Group=<%= scope.lookupvar('boundary::group') %>
+
+[Install]
+WantedBy=multi-user.target
